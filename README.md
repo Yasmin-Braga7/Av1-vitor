@@ -99,7 +99,7 @@ Para cumprir a regra arquitetural de consumo entre microsserviços estabelecida 
 
 * **[Laura ]** — *Responsável pelo Microsserviço de Pedidos.*
 * **[Gustavo ]** — *Responsável pelo Microsserviço de Estoque.*
-* **[Gustavo ]** — *Responsável pelo Microsserviço de Pagamento.*
+* **[Pablo ]** — *Responsável pelo Microsserviço de Pagamento.*
 
 ### 🎓 Propósito Acadêmico
 
