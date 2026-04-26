@@ -1,3 +1,5 @@
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const prisma = require("../config/prisma");
 
 class UsuariosController {
@@ -21,11 +23,14 @@ class UsuariosController {
             const { nome, email, senha, telefone } = req.body;
             if (!nome || !email || !senha) {
                 res.send(400, {
-                    message: "Nome e email são obrigatórios."
+                    message: "Nome, email e senha são obrigatórios."
                 });
             }
+            const salt = await bcrypt.genSalt(10);
+            // Aqui vai transformar a senha em código   
+            const senhaCriptografada = await bcrypt.hash(senha, salt);
             const novoUsuario = await prisma.usuario.create({
-                data: { nome, email, senha, telefone }
+                data: { nome, email, senha: senhaCriptografada, telefone }
             });
             res.send(201, novoUsuario);
         } catch (error) {
@@ -35,6 +40,41 @@ class UsuariosController {
 
             }
             res.send(500, { message: "Erro ao cadastrar usuário." });
+        }
+    }
+
+    static async login(req, res) {
+        try {
+            const {email, senha} = req.body;
+
+            if(!email || !senha) {
+                return res.send(400, { message: "Email e senha são obrigatórios"});
+            }
+            const usuario = await prisma.usuario.findUnique({
+                where: {email: email}
+            });
+
+            if(!usuario) {
+                return res.send(401, { message: "Email ou senha inválidos."})
+            }
+            const senhaCorreta = await bcrypt.compare(senha, usuario.senha);
+
+            if(!senhaCorreta) {
+                return res.send(401, { message: "Email e senha inválidos."});
+            }
+            // 4. Se tudo deu certo, gera o Token (Crachá de acesso)
+            // O primeiro parâmetro é o que vamos guardar no token (o ID do usuario)
+            // O segundo é uma "chave secreta" (em um projeto real, isso vai pro .env)
+            // O terceiro é o tempo de validade do token
+            const token = jwt.sign(
+                {id: usuario.id},
+                "CHAVE_SECRETA",
+                {expiresIn: "3h"}
+            );
+            res.send(200, { message: "Login realizado com sucesso!", token: token});
+        } catch(error) {
+            console.error("Erro no login", error);
+            res.send(500, { message: "Erro interno ao realizar login."});
         }
     }
 
