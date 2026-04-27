@@ -6,7 +6,8 @@ function verificarToken(req, res, next) {
     if(!authHeader) {
         return res.send(401, { message: "Acesso negado. Token não fornecido."});
     }
-    const token = authHeader.split(" ")[1];
+    const partes = authHeader.split(" ");
+    const token = partes.length === 2 ? partes[1] : partes[0];
     try {
         const decodificado = jwt.verify(token, "CHAVE_SECRETA");
         req.usuarioId = decodificado.id;

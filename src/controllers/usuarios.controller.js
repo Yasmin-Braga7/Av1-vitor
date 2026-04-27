@@ -179,7 +179,7 @@ class UsuariosController {
             }
 
             // Aqui vamos consumir a API de microserviço de Pedidos
-            const urlPedidos = `http://localhost:3009/pedidos/usuario/${id}`;
+            const urlPedidos = `http://localhost:3004/pedidos/usuario/${id}`;
             let pedidos = [];
 
             try {
