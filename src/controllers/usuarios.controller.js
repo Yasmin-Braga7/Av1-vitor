@@ -10,6 +10,10 @@ class UsuariosController {
             const usuarios = await prisma.usuario.findMany({
                 orderBy: { id: "asc" }
             });
+
+            // Adicionei para quando o json retorna não venha a senha
+            usuarios.forEach(u => delete u.senha);
+
             res.send(200, usuarios);
         } catch (error) {
             res.send(500, { message: "Erro ao listar usuários." });
@@ -32,6 +36,10 @@ class UsuariosController {
             const novoUsuario = await prisma.usuario.create({
                 data: { nome, email, senha: senhaCriptografada, telefone }
             });
+
+            // Adicionei para quando o json retorna não venha a senha
+            delete novoUsuario.senha;
+
             res.send(201, novoUsuario);
         } catch (error) {
             console.error("Erro realdo Prisma", error);
@@ -89,6 +97,10 @@ class UsuariosController {
             if(!usuario) {
                 return res.send(404, { message: "Usuário não encontrado."});
             }
+
+            // Adicionei para quando o json retorna não venha a senha
+            delete usuario.senha;
+
             res.send(200, usuario);
         } catch (error) {
             res.send(500, { message: "Erro ao buscar usuário"});
@@ -105,6 +117,10 @@ class UsuariosController {
                 where: {id: Number(id)},
                 data: dados
             });
+
+            // Adicionei para quando o json retorna não venha a senha
+            delete usuarioAtualizado.senha;
+
             res.send(200, usuarioAtualizado);
         } catch (error) {
             res.send(400, { message: "Erro ao atualizar usuário. Verifique os dados"});
@@ -177,6 +193,9 @@ class UsuariosController {
             if (!usuario) {
                 return res.send(404, { message: "Usuário não encontrado."})
             }
+
+            // Adicionei para quando o json retorna não venha a senha
+            delete usuario.senha;
 
             // Aqui vamos consumir a API de microserviço de Pedidos
             const urlPedidos = `http://localhost:3004/pedidos/usuario/${id}`;

@@ -11,6 +11,8 @@ O projeto foi construído utilizando as seguintes ferramentas modernas do ecossi
 * **[Prisma ORM](https://www.prisma.io/)**: ORM de última geração utilizado para modelagem de dados, *migrations* e consultas *type-safe*.
 * **[MySQL](https://www.mysql.com/)**: Banco de dados relacional para persistência segura das informações.
 * **Nativo (Fetch API)**: Utilizado para comunicação *Server-to-Server* assíncrona.
+* **[JSON Web Token (JWT)](https://jwt.io/)**: Padrão utilizado para a geração de tokens de acesso seguro.
+* **Nativo (Fetch API)**: Utilizado para comunicação *Server-to-Server* assíncrona.
 
 ---
 
@@ -23,6 +25,16 @@ O projeto foi construído utilizando as seguintes ferramentas modernas do ecossi
 
 ---
 
+## 🔐 Autenticação e Autorização
+
+A segurança da API é garantida através da implementação de **JSON Web Tokens (JWT)** e *hash* de senhas.
+
+* **Proteção de Senhas:** As senhas dos usuários são criptografadas no banco de dados utilizando a biblioteca `bcrypt`. Elas nunca são trafegadas limpas nas respostas da API.
+* **Middlewares de Segurança:** A maior parte das rotas exige um token de acesso válido. O token é gerado na rota de `/login` e deve ser enviado através do cabeçalho de requisição `Authorization`.
+* **Sessões Controladas:** Os tokens possuem tempo de expiração configurado (ex: 3 horas) para mitigar falhas de segurança em caso de vazamento.
+
+---
+
 ## 🚀 Destaque: Integração entre Microsserviços 
 
 Cumprindo os requisitos técnicos da arquitetura, implementamos o padrão **API Composition**. 
@@ -32,32 +44,49 @@ A rota `/perfil-completo` unifica os dados locais (Usuários e Endereços) com o
 ```
 JSON:
 {
-  "id": 1,
-  "nome": "Yasmin Mimi",
-  "email": "mimi@ads.com",
+  "id": 3,
+  "nome": "Laura Santos",
+  "email": "Laura@gmail.com",
+  "telefone": "219777-888",
+  "createdAt": "2026-04-27T13:58:59.913Z",
+  "updatedAt": "2026-04-29T11:38:45.302Z",
   "enderecos": [
-     { "rua": "Av das Tecnologias", "numero": "1024" }
+     { 
+       "id": 2, 
+       "rua": "Av das Américas", 
+       "numero": "1000", 
+       "bairro": "Barra da Tijuca", 
+       "cidade": "Rio de Janeiro", 
+       "estado": "RJ", 
+       "cep": "22640-100" 
+     }
   ],
   "historicoDeCompras": [
-     { "idPedido": 105, "status": "Entregue" }
+     { 
+       "id": 4, 
+       "status": "CRIADO", 
+       "total": 50, 
+       "itens": [ { "produtoId": 5, "quantidade": 1, "preco": 50 } ] 
+     }
   ]
-} 
+}
 ```
 
 ---
 
 # 🛣️ Rotas da API:
 
-| Método | Rota                            | Descrição                                |
-| ------ | ------------------------------- | ---------------------------------------- |
-| GET    | `/usuarios`                     | Lista todos os usuários cadastrados      |
-| POST   | `/usuarios`                     | Cria um novo usuário                     |
-| GET    | `/usuarios/:id`                 | Busca um usuário específico por ID       |
-| PUT    | `/usuarios/:id`                 | Atualiza os dados de um usuário          |
-| DELETE | `/usuarios/:id`                 | Remove o usuário do sistema em cascata   |
-| POST   | `/usuarios/:idUsuario/endereco` | Adiciona um endereço a um usuário        |
-| GET    | `/usuarios/:idUsuario/endereco` | Busca os endereços vinculados ao usuário |
-| GET    | `/usuarios/:id/perfil-completo` | Integração: Retorna o perfil + pedidos   |
+| Método | Rota | Descrição | Autenticação |
+|--------|------|------------|--------------|
+| POST | `/usuarios` | Cria um novo usuário | ❌ Livre |
+| POST | `/login` | Realiza login e retorna o Token JWT | ❌ Livre |
+| GET | `/usuarios` | Lista todos os usuários cadastrados | 🔒 JWT |
+| GET | `/usuarios/:id` | Busca um usuário específico por ID | 🔒 JWT |
+| PUT | `/usuarios/:id` | Atualiza os dados de um usuário | 🔒 JWT |
+| DELETE | `/usuarios/:id` | Remove o usuário do sistema em cascata | 🔒 JWT |
+| POST | `/usuarios/:idUsuario/endereco` | Adiciona um endereço a um usuário | 🔒 JWT |
+| GET | `/usuarios/:idUsuario/endereco` | Busca os endereços vinculados ao usuário | 🔒 JWT |
+| GET | `/usuarios/:id/perfil-completo` | Integração: Retorna o perfil + os pedidos | 🔒 JWT |
 
 ---
 
