@@ -1,4 +1,5 @@
 const restify = require("restify");
+require('dotenv').config();
 const UsuariosController = require("./controllers/usuarios.controller");
 const verificarToken = require("./middlewares/auth.middleware");
 
@@ -11,6 +12,7 @@ server.use(restify.plugins.bodyParser());
 
 server.post("/usuarios", UsuariosController.criar);
 server.post("/login", UsuariosController.login);
+server.get("/interno/usuarios/:id", UsuariosController.buscarPorId);
 
 // Rotas de usuário
 server.get("/usuarios", verificarToken ,UsuariosController.listar);
