@@ -78,8 +78,8 @@ JSON:
 
 | Método | Rota | Descrição | Autenticação |
 |--------|------|------------|--------------|
-| POST | `/usuarios` | Cria um novo usuário | ❌ Livre |
-| POST | `/login` | Realiza login e retorna o Token JWT | ❌ Livre |
+| POST | `/usuarios` | Cria um novo usuário | 🔓 Livre |
+| POST | `/login` | Realiza login e retorna o Token JWT | 🔓 Livre |
 | GET | `/usuarios` | Lista todos os usuários cadastrados | 🔒 JWT |
 | GET | `/usuarios/:id` | Busca um usuário específico por ID | 🔒 JWT |
 | PUT | `/usuarios/:id` | Atualiza os dados de um usuário | 🔒 JWT |
